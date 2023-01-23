@@ -1,7 +1,7 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase
 
 
 class ProbabilityBot(Bot, ABC):
@@ -19,6 +19,15 @@ class ProbabilityBot(Bot, ABC):
         opponentSuitMove = []
         max_score = 2
 
+        if GameState.game_phase() == GamePhase.ONE:
+            if not PlayerPerspective.am_i_leader():
+
+            else:
+
+        if GameState.game_phase() == GamePhase.TWO:
+            if not PlayerPerspective.am_i_leader():
+
+            else:
 
 #PlayerPerspective get_talon_size -> Finds amount of cards still in talon
 #PlayerPerspective get_won_cards
