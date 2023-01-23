@@ -16,8 +16,8 @@ class BullyBot(Bot):
         moves: list[Move] = state.valid_moves()
         scorer = SchnapsenTrickScorer()
 
-        trumpCardsMove=[]
-        opponentSuitMove=[]
+        trumpCardsMove = []
+        opponentSuitMove = []
         max_score = 2
 
 

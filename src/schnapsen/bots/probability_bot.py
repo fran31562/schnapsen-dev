@@ -1,12 +1,23 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer
 
 
-class ProbabilityBot(Bot):
+class ProbabilityBot(Bot, ABC):
     def __init__(self) -> None:
         super().__init__()
+
+    def get_move(self,
+                 state: PlayerPerspective,
+                 leader_move: Optional[Move]) -> Move:
+
+        moves: list[Move] = state.valid_moves()
+        scorer = SchnapsenTrickScorer()
+
+        trumpCardsMove = []
+        opponentSuitMove = []
+        max_score = 2
 
 
 #PlayerPerspective get_talon_size -> Finds amount of cards still in talon
