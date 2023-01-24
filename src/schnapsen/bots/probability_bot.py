@@ -1,7 +1,7 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase, Hand, Talon
 
 
 class ProbabilityBot(Bot, ABC):
@@ -18,12 +18,52 @@ class ProbabilityBot(Bot, ABC):
 
         trumpCardsMove = []
         opponentSuitMove = []
+        valid_moves = []
         max_score = 2
 
         if GameState.game_phase() == GamePhase.ONE:
             if not PlayerPerspective.am_i_leader():
+                #use non-trump trick to win
 
+                #If player uses a non-trump ace or 10, use a trump card
+                #If no option, play a trump card
+                #If no card in hand can beat opponent, discard card of least value
+
+            #This is for when we are following not leading
             else:
+                #get_game_history PP
+                #Loop through all the valid moves
+                hearts: list = Hand.filter_suit("HEARTS")
+                spades: list = Hand.filter_suit("SPADES")
+                clubs: list = Hand.filter_suit("CLUBS")
+                diamonds: list = Hand.filter_suit("DIAMONDS")
+
+                trump_suit = state.get_trump_suit()
+                trump_card = state.get_trump_card()
+                cards_in_hand = state.get_hand()
+                talon_size = state.get_talon_size()
+
+                opponent_hand = state.get_known_cards_of_opponent_hand()
+                opponent_won_cards = state.get_opponent_won_cards()
+                my_won_cards = state.get_won_cards()
+
+                for move in moves:
+                    if move.cards[0].suit == trump_suit:
+                        trumpCardsMove.append(move)
+
+                # Is there a possible trump exchange, if yes do it
+                if not trump_card.rank == "JACK":
+                    for move in trumpCardsMove:
+                        if move.cards[0].rank == "JACK":
+                            Talon.trump_exchange(move)
+
+                suits: list = ["HEARTS", "SPADES", "CLUBS", "DIAMONDS"]
+                ranks: list = ["TEN", "JACK", "QUEEN", "KING"]
+
+                #Calculate the probabilities of each card
+
+
+                #Calculate the probabilities the opponent has a trump card
 
         if GameState.game_phase() == GamePhase.TWO:
             if not PlayerPerspective.am_i_leader():
