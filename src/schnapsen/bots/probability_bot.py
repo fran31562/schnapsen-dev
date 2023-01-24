@@ -13,6 +13,7 @@ class ProbabilityBot(Bot, ABC):
                  leader_move: Optional[Move]) -> Move:
 
         moves: list[Move] = state.valid_moves()
+        my_move: Move = moves[0]
         scorer = SchnapsenTrickScorer()
 
         trumpCardsMove = []
@@ -26,8 +27,37 @@ class ProbabilityBot(Bot, ABC):
 
         if GameState.game_phase() == GamePhase.TWO:
             if not PlayerPerspective.am_i_leader():
+                current_trump = state.get_trump_suit()
+                valid_moves = []
+                trump_moves = []
+                for x in moves:
+                    if x.cards[0].suit == current_trump:
+                        trump_moves.append(x)
+                if len(trump_moves) > 0:
+                    ace_trump = trump_moves.filter_rank('ACE')
+                    ten_trump = trump_moves.filer_rank('TEN')
+                    king_trump = trump_moves.filter_rank('KING')
+                    queen_trump = trump_moves.filter_rank('QUEEN')
+                    jack_trump = trump_moves.filter_rank('JACK')
+                    if ace_trump > 0:
+                        my_move = ace_trump[0]
+                    elif ten_trump > 0:
+                        my_move = ten_trump[0]
+                    elif king_trump > 0:
+                        my_move = ten_trump[0]
+                    elif queen_trump > 0:
+                        my_move = queen_trump[0]
+                    elif jack_trump > 0:
+                        my_move = jack_trump[0]
+                return my_move
 
             else:
+                current_trump = state.get_trump_suit()
+                for x in moves:
+                    if x.cards[0].suit == current_trump:
+                        my_move = x
+                    return my_move
+
 
 #PlayerPerspective get_talon_size -> Finds amount of cards still in talon
 #PlayerPerspective get_won_cards
@@ -55,10 +85,12 @@ Stock open:
 
 Elif stock closed:
 	We are following:
-		xxx
+		lowest ranked card that can win
+		or trump card
+		if cant win, play lowest rank card.
 
 	We are leading:
-		xxx
+		
 
 
 '''

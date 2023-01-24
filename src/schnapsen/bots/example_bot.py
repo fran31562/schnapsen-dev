@@ -19,7 +19,7 @@ class ExampleBot(Bot):
         # Get valid moves
         moves: list[Move] = state.valid_moves()
         one_move: Move = moves[0]
-        # You can ask a move whether it is a marriage or a trum exchange
+        # You can ask a move whether it is a marriage or a trump exchange
         print(one_move.is_marriage())
         print(one_move.is_trump_exchange())
 
