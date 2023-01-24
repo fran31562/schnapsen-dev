@@ -1,7 +1,7 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase, Hand, Talon
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase, Hand, Talon, Card
 
 
 class ProbabilityBot(Bot, ABC):
@@ -58,7 +58,45 @@ class ProbabilityBot(Bot, ABC):
                             Talon.trump_exchange(move)
 
                 suits: list = ["HEARTS", "SPADES", "CLUBS", "DIAMONDS"]
-                ranks: list = ["TEN", "JACK", "QUEEN", "KING"]
+                ranks: list = ["TEN", "JACK", "QUEEN", "KING", "ACE"]
+
+
+                probability_dictionary: dict = {
+                "TEN_OF_HEARTS" : [0, Card.TEN_HEARTS],
+                "JACK_OF_HEARTS" : [0, Card.JACK_HEARTS],
+                "QUEEN_OF_HEARTS" : [0, Card.QUEEN_HEARTS],
+                "KING_OF_HEARTS" : [0, Card.KING_HEARTS],
+                "ACE_OF_HEARTS" : [0, Card.ACE_HEARTS],
+
+                "TEN_OF_SPADES": [0, Card.TEN_SPADES],
+                "JACK_OF_SPADES": [0, Card.JACK_SPADES],
+                "QUEEN_OF_SPADES": [0, Card.QUEEN_SPADES],
+                "KING_OF_SPADES": [0, Card.KING_SPADES],
+                "ACE_OF_SPADES": [0, Card.ACE_SPADES],
+
+                "TEN_OF_CLUBS": [0, Card.TEN_CLUBS],
+                "JACK_OF_CLUBS": [0, Card.JACK_CLUBS],
+                "QUEEN_OF_CLUBS": [0, Card.QUEEN_CLUBS],
+                "KING_OF_CLUBS": [0, Card.KING_CLUBS],
+                "ACE_OF_CLUBS": [0, Card.ACE_CLUBS],
+
+                "TEN_OF_DIAMONDS": [0, Card.TEN_DIAMONDS],
+                "JACK_OF_DIAMONDS": [0, Card.JACK_DIAMONDS],
+                "QUEEN_OF_DIAMONDS": [0, Card.QUEEN_DIAMONDS],
+                "KING_OF_DIAMONDS": [0, Card.KING_DIAMONDS],
+                "ACE_OF_DIAMONDS": [0, Card.ACE_DIAMONDS]
+                }
+
+                for card in probability_dictionary:
+                    if card[1] not in opponent_won_cards:
+                        if card[1] not in my_won_cards:
+                            if card[1] != trump_card:
+                                xxxxx
+
+                    if card[1] in opponent_hand:
+                        card[0] = 100
+
+
 
                 #Calculate the probabilities of each card
 
