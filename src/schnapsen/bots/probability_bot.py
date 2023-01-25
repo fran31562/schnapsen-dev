@@ -31,13 +31,6 @@ class ProbabilityBot(Bot, ABC):
 
             #This is for when we are following not leading
             else:
-                #get_game_history PP
-                #Loop through all the valid moves
-                hearts: list = Hand.filter_suit("HEARTS")
-                spades: list = Hand.filter_suit("SPADES")
-                clubs: list = Hand.filter_suit("CLUBS")
-                diamonds: list = Hand.filter_suit("DIAMONDS")
-
                 trump_suit = state.get_trump_suit()
                 trump_card = state.get_trump_card()
                 cards_in_hand = state.get_hand()
@@ -46,6 +39,7 @@ class ProbabilityBot(Bot, ABC):
                 opponent_hand = state.get_known_cards_of_opponent_hand()
                 opponent_won_cards = state.get_opponent_won_cards()
                 my_won_cards = state.get_won_cards()
+                seen_cards = state.seen_cards()
 
                 for move in moves:
                     if move.cards[0].suit == trump_suit:
@@ -57,44 +51,62 @@ class ProbabilityBot(Bot, ABC):
                         if move.cards[0].rank == "JACK":
                             Talon.trump_exchange(move)
 
-                suits: list = ["HEARTS", "SPADES", "CLUBS", "DIAMONDS"]
-                ranks: list = ["TEN", "JACK", "QUEEN", "KING", "ACE"]
-
-
                 probability_dictionary: dict = {
-                "TEN_OF_HEARTS" : [0, Card.TEN_HEARTS],
-                "JACK_OF_HEARTS" : [0, Card.JACK_HEARTS],
-                "QUEEN_OF_HEARTS" : [0, Card.QUEEN_HEARTS],
-                "KING_OF_HEARTS" : [0, Card.KING_HEARTS],
-                "ACE_OF_HEARTS" : [0, Card.ACE_HEARTS],
+                "TEN_OF_HEARTS" : [0, Card.TEN_HEARTS, 10],
+                "JACK_OF_HEARTS" : [0, Card.JACK_HEARTS, 2],
+                "QUEEN_OF_HEARTS" : [0, Card.QUEEN_HEARTS, 3],
+                "KING_OF_HEARTS" : [0, Card.KING_HEARTS, 4],
+                "ACE_OF_HEARTS" : [0, Card.ACE_HEARTS, 11],
 
-                "TEN_OF_SPADES": [0, Card.TEN_SPADES],
-                "JACK_OF_SPADES": [0, Card.JACK_SPADES],
-                "QUEEN_OF_SPADES": [0, Card.QUEEN_SPADES],
-                "KING_OF_SPADES": [0, Card.KING_SPADES],
-                "ACE_OF_SPADES": [0, Card.ACE_SPADES],
+                "TEN_OF_SPADES": [0, Card.TEN_SPADES, 10],
+                "JACK_OF_SPADES": [0, Card.JACK_SPADES, 2],
+                "QUEEN_OF_SPADES": [0, Card.QUEEN_SPADES, 3],
+                "KING_OF_SPADES": [0, Card.KING_SPADES, 4],
+                "ACE_OF_SPADES": [0, Card.ACE_SPADES, 11],
 
-                "TEN_OF_CLUBS": [0, Card.TEN_CLUBS],
-                "JACK_OF_CLUBS": [0, Card.JACK_CLUBS],
-                "QUEEN_OF_CLUBS": [0, Card.QUEEN_CLUBS],
-                "KING_OF_CLUBS": [0, Card.KING_CLUBS],
-                "ACE_OF_CLUBS": [0, Card.ACE_CLUBS],
+                "TEN_OF_CLUBS": [0, Card.TEN_CLUBS, 10],
+                "JACK_OF_CLUBS": [0, Card.JACK_CLUBS, 2],
+                "QUEEN_OF_CLUBS": [0, Card.QUEEN_CLUBS, 3],
+                "KING_OF_CLUBS": [0, Card.KING_CLUBS, 4],
+                "ACE_OF_CLUBS": [0, Card.ACE_CLUBS, 11],
 
-                "TEN_OF_DIAMONDS": [0, Card.TEN_DIAMONDS],
-                "JACK_OF_DIAMONDS": [0, Card.JACK_DIAMONDS],
-                "QUEEN_OF_DIAMONDS": [0, Card.QUEEN_DIAMONDS],
-                "KING_OF_DIAMONDS": [0, Card.KING_DIAMONDS],
-                "ACE_OF_DIAMONDS": [0, Card.ACE_DIAMONDS]
+                "TEN_OF_DIAMONDS": [0, Card.TEN_DIAMONDS, 10],
+                "JACK_OF_DIAMONDS": [0, Card.JACK_DIAMONDS, 2],
+                "QUEEN_OF_DIAMONDS": [0, Card.QUEEN_DIAMONDS, 3],
+                "KING_OF_DIAMONDS": [0, Card.KING_DIAMONDS, 4],
+                "ACE_OF_DIAMONDS": [0, Card.ACE_DIAMONDS, 11]
                 }
 
                 for card in probability_dictionary:
-                    if card[1] not in opponent_won_cards:
-                        if card[1] not in my_won_cards:
-                            if card[1] != trump_card:
-                                xxxxx
+                    if probability_dictionary[card][1] not in seen_cards:
+                        temp = 5 + talon_size
+                        temp2 = 1 / temp
+                        probability_dictionary[card][0] = temp2 * 100
 
-                    if card[1] in opponent_hand:
-                        card[0] = 100
+                    if probability_dictionary[card][1] in opponent_hand:
+                        probability_dictionary[card][0] = 100
+
+                for card in cards_in_hand:
+                    rank = card.rank()
+                    value = 0
+                    suit = card.suit()
+                    points = 0
+                    if rank == "TEN":
+                        value = 10
+                    elif rank == "JACK":
+                        value = 2
+                    elif rank == "QUEEN":
+                        value = 3
+                    elif rank == "KING":
+                        value = 4
+                    elif rank == "ACE":
+                        value = 11
+                    templist = []
+                    for x in probability_dictionary:
+                        if x
+
+
+
 
 
 
