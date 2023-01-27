@@ -17,13 +17,11 @@ class ProbabilityBot(Bot, ABC):
         scorer = SchnapsenTrickScorer()
 
         trumpCardsMove = []
-        opponentSuitMove = []
-        valid_moves = []
         max_score = 2
 
         if GameState.game_phase() == GamePhase.ONE:
             if not PlayerPerspective.am_i_leader():
-                #use non-trump trick to win
+                # use non-trump trick to win
 
                 #If player uses a non-trump ace or 10, use a trump card
                 #If no option, play a trump card
@@ -37,8 +35,6 @@ class ProbabilityBot(Bot, ABC):
                 talon_size = state.get_talon_size()
 
                 opponent_hand = state.get_known_cards_of_opponent_hand()
-                opponent_won_cards = state.get_opponent_won_cards()
-                my_won_cards = state.get_won_cards()
                 seen_cards = state.seen_cards()
 
                 for move in moves:
@@ -81,15 +77,15 @@ class ProbabilityBot(Bot, ABC):
                     if probability_dictionary[card][1] not in seen_cards:
                         temp = 5 + talon_size
                         temp2 = 1 / temp
-                        probability_dictionary[card][0] = temp2 * 100
+                        probability_dictionary[card][0] = temp2
 
                     if probability_dictionary[card][1] in opponent_hand:
-                        probability_dictionary[card][0] = 100
+                        probability_dictionary[card][0] = 1
 
                 for card in cards_in_hand:
-                    rank = card.rank()
+                    rank = card.rank(card)
                     value = 0
-                    suit = card.suit()
+                    suit = card.suit(card)
                     points = 0
                     if rank == "TEN":
                         value = 10
@@ -102,18 +98,29 @@ class ProbabilityBot(Bot, ABC):
                     elif rank == "ACE":
                         value = 11
                     templist = []
+
                     for x in probability_dictionary:
-                        if x
+                        if probability_dictionary[x][2] >= value:
+                            templist.append(probability_dictionary[x])
 
+                        if card.suit(probability_dictionary[x][1]) == trump_suit:
+                            templist.append(probability_dictionary[x])
 
+                    total: float = 0
+                    total_probability_dict: dict = {}
+                    for x in templist:
+                        total += x[0]
+                        total_probability_dict[card] = total
 
+                best_move = {"prob": 0, "card": ""}
+                for move in total_probability_dict:
+                    if total_probability_dict[move] < best_move["prob"]:
+                        best_move["prob"] = total_probability_dict[move]
+                        best_move["card"] = move
+                final_move = best_move["card"]
 
+                return final_move
 
-
-                #Calculate the probabilities of each card
-
-
-                #Calculate the probabilities the opponent has a trump card
 
         if GameState.game_phase() == GamePhase.TWO:
             if not PlayerPerspective.am_i_leader():
@@ -146,7 +153,7 @@ class ProbabilityBot(Bot, ABC):
                 for x in moves:
                     if x.cards[0].suit == current_trump:
                         my_move = x
-                    return my_move
+            return my_move
 
 
 #PlayerPerspective get_talon_size -> Finds amount of cards still in talon
