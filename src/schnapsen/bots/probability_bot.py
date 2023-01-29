@@ -127,6 +127,11 @@ class ProbabilityBot(Bot, ABC):
                 current_trump = state.get_trump_suit()
                 valid_moves = []
                 trump_moves = []
+                ace_normal = moves.filter_rank('ACE')
+                ten_normal = moves.filter_rank('TEN')
+                king_normal = moves.filter_rank("KING")
+                queen_normal = moves.filter_rank('QUEEN')
+                jack_normal = moves.filter_rank('JACK')
                 for x in moves:
                     if x.cards[0].suit == current_trump:
                         trump_moves.append(x)
@@ -136,23 +141,48 @@ class ProbabilityBot(Bot, ABC):
                     king_trump = trump_moves.filter_rank('KING')
                     queen_trump = trump_moves.filter_rank('QUEEN')
                     jack_trump = trump_moves.filter_rank('JACK')
-                    if ace_trump > 0:
+                    if len(ace_trump) > 0:
                         my_move = ace_trump[0]
-                    elif ten_trump > 0:
+                    elif len(ten_trump) > 0:
                         my_move = ten_trump[0]
-                    elif king_trump > 0:
+                    elif len(king_trump) > 0:
                         my_move = ten_trump[0]
-                    elif queen_trump > 0:
+                    elif len(queen_trump) > 0:
                         my_move = queen_trump[0]
-                    elif jack_trump > 0:
+                    elif len(jack_trump) > 0:
                         my_move = jack_trump[0]
-                return my_move
+                elif len(ace_normal) > 0:
+                    my_move = ace_normal[0]
+                elif len(ten_normal) > 0:
+                    my_move = ten_normal[0]
+                elif len(king_normal) > 0:
+                    my_move = king_normal[0]
+                elif len(queen_normal) > 0:
+                    my_move = queen_normal[0]
+                elif len(jack_normal) > 0:
+                    my_move = jack_normal[0]
+
 
             else:
+                ace_normal = moves.filter_rank('ACE')
+                ten_normal = moves.filter_rank('TEN')
+                king_normal = moves.filter_rank("KING")
+                queen_normal = moves.filter_rank('QUEEN')
+                jack_normal = moves.filter_rank('JACK')
                 current_trump = state.get_trump_suit()
                 for x in moves:
                     if x.cards[0].suit == current_trump:
                         my_move = x
+                    elif len(ace_normal) > 0:
+                        my_move = ace_normal[0]
+                    elif len(ten_normal) > 0:
+                        my_move = ten_normal[0]
+                    elif len(king_normal) > 0:
+                        my_move = king_normal[0]
+                    elif len(queen_normal) > 0:
+                        my_move = queen_normal[0]
+                    elif len(jack_normal) > 0:
+                        my_move = jack_normal[0]
             return my_move
 
 
