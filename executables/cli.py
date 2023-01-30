@@ -46,7 +46,7 @@ def play_games_and_return_stats(engine: SchnapsenGamePlayEngine, bot1: Bot, bot2
 def random_game() -> None:
     engine = SchnapsenGamePlayEngine()
     bot1 = RandBot(12112121)
-    bot2 = RandBot(464566)
+    bot2 = ProbabilityBot()
     for i in range(1000):
         winner_id, game_points, score = engine.play_game(bot1, bot2, random.Random(i))
         print(f"Game ended. Winner is {winner_id} with {game_points} points, score {score}")
