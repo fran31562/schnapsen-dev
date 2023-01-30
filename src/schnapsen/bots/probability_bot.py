@@ -1,18 +1,16 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, SchnapsenTrickImplementer, GameState, GamePhase, Hand, Talon, Card
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, SchnapsenTrickImplementer, GameState, GamePhase, Hand, Talon, Card, Bot, GamePlayEngine
 
 
 class ProbabilityBot(Bot, ABC):
     def __init__(self) -> None:
         super().__init__()
-        self.talon = Talon
 
     def get_move(self,
                  state: PlayerPerspective,
                  leader_move: Optional[Move]) -> Move:
-
         moves: list[Move] = state.valid_moves()
         my_move: Move = moves[0]
         scorer = SchnapsenTrickScorer()
@@ -25,7 +23,7 @@ class ProbabilityBot(Bot, ABC):
 # ----------------------------------------------------- #
 
         if GameState.game_phase(self) == GamePhase.ONE:
-            if not PlayerPerspective.am_i_leader():
+            if not state.am_i_leader():
 
                 # Get the card that was just played by the opponent
                 opp_played_card = SchnapsenTrickImplementer.get_leader_move()
@@ -307,8 +305,8 @@ class ProbabilityBot(Bot, ABC):
 # GAME PHASE 2 #
 # ----------------------------------------------------- #
 
-        if GameState.game_phase() == GamePhase.TWO:
-            if not PlayerPerspective.am_i_leader():
+        if GameState.game_phase(self) == GamePhase.TWO:
+            if not state.am_i_leader():
                 current_trump = state.get_trump_suit()
                 valid_moves = []
                 trump_moves = []
