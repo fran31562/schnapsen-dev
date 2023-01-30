@@ -23,6 +23,7 @@ def main() -> None:
     """Various Schnapsen Game Examples"""
 
 
+@main.command()
 def play_games_and_return_stats(engine: SchnapsenGamePlayEngine, bot1: Bot, bot2: Bot, number_of_games: int) -> int:
     """
     Play number_of_games games between bot1 and bot2, using the SchnapsenGamePlayEngine, and return how often bot1 won.
