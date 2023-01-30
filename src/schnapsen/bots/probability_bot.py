@@ -26,9 +26,6 @@ class ProbabilityBot(Bot, ABC):
         if GameState.game_phase() == GamePhase.ONE:
             if not PlayerPerspective.am_i_leader():
 
-                # Get the cards in the bots hand
-                cards_in_hand = state.get_hand()
-
                 # Get the card that was just played by the opponent
                 opp_played_card = SchnapsenTrickImplementer.get_leader_move()
 
@@ -267,9 +264,9 @@ class ProbabilityBot(Bot, ABC):
                         probability_dictionary[card][0] = 1
 
                 for card in cards_in_hand:
-                    rank = card.rank(card)
+                    rank = card.rank()
                     value = 0
-                    suit = card.suit(card)
+                    suit = card.suit()
                     points = 0
                     if rank == "TEN":
                         value = 10
