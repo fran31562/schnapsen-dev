@@ -15,6 +15,8 @@ from schnapsen.twenty_four_card_schnapsen import \
 
 from schnapsen.bots.rdeep import RdeepBot
 
+from schnapsen.bots.probability_bot import ProbabilityBot
+
 
 @click.group()
 def main() -> None:
@@ -189,7 +191,7 @@ def try_bot_game() -> None:
 def game_24() -> None:
     engine = TwentyFourSchnapsenGamePlayEngine()
     bot1 = RandBot(12112121)
-    bot2 = RandBot(464566)
+    bot2 = ProbabilityBot()
     for i in range(1000):
         winner_id, game_points, score = engine.play_game(bot1, bot2, random.Random(i))
         print(f"Game ended. Winner is {winner_id} with {game_points} points, score {score}")
@@ -197,3 +199,4 @@ def game_24() -> None:
 
 if __name__ == "__main__":
     main()
+

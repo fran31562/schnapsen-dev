@@ -7,6 +7,7 @@ from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, S
 class ProbabilityBot(Bot, ABC):
     def __init__(self) -> None:
         super().__init__()
+        self.talon = Talon
 
     def get_move(self,
                  state: PlayerPerspective,
@@ -23,7 +24,7 @@ class ProbabilityBot(Bot, ABC):
 # GAME PHASE 1 #
 # ----------------------------------------------------- #
 
-        if GameState.game_phase() == GamePhase.ONE:
+        if GameState.game_phase(self) == GamePhase.ONE:
             if not PlayerPerspective.am_i_leader():
 
                 # Get the card that was just played by the opponent
