@@ -6,13 +6,13 @@ from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, S
 
 class ProbabilityBot(Bot, ABC):
     def __init__(self) -> None:
-        self.talon = Talon
-        self.state = GameState
         super().__init__()
+        self.talon = Talon
 
     def get_move(self,
                  state: PlayerPerspective,
                  leader_move: Optional[Move]) -> Move:
+
         moves: list[Move] = state.valid_moves()
         my_move: Move = moves[0]
         scorer = SchnapsenTrickScorer()
@@ -24,8 +24,9 @@ class ProbabilityBot(Bot, ABC):
 # GAME PHASE 1 #
 # ----------------------------------------------------- #
 
-        if state.get_phase == GamePhase.ONE:
-            if not state.am_i_leader():
+        if GameState.game_phase(self) == GamePhase.ONE:
+            if not PlayerPerspective.am_i_leader():
+
                 # Get the card that was just played by the opponent
                 opp_played_card = SchnapsenTrickImplementer.get_leader_move()
 
@@ -40,6 +41,9 @@ class ProbabilityBot(Bot, ABC):
 
                 # The list of the best moves that are not trump
                 best_moves_non_trump = []
+
+                # The final best move that will be returned
+                best_move: Move = None
 
                 # Analyze the card rank of the opponents played card and give it the appropriate value
                 if opp_played_card.rank == "TEN":
@@ -88,7 +92,7 @@ class ProbabilityBot(Bot, ABC):
 
                     # If we have a card that can beat the trump card played by the opponent, play it
                     if len(best_moves_trump) > 0:
-                        my_move = best_moves_trump[0]
+                        best_move = best_moves_trump[0]
 
                     # If we have no trump card that can beat the opponents played card, discard of a card of low value
                     elif len(best_moves_trump) == 0:
@@ -96,7 +100,9 @@ class ProbabilityBot(Bot, ABC):
                         for x in best_moves_non_trump:
                             if x[1] < temp:
                                 temp = x[1]
-                                my_move = x[0]
+                                best_move = x[0]
+
+                    return best_move
 
                 # If the opponent plays a non trump card
                 elif not opp_played_card.suit == trump_suit:
@@ -108,7 +114,7 @@ class ProbabilityBot(Bot, ABC):
                                 best_moves_trump.append(move)
 
                         if len(best_moves_trump) > 0:
-                            my_move = best_moves_trump[0]
+                            best_move = best_moves_trump[0]
 
                         elif len(best_moves_trump) == 0:
                             for move in moves:
@@ -133,7 +139,7 @@ class ProbabilityBot(Bot, ABC):
 
                             # If we do have a card that can beat the opponents card, play it
                             if len(best_moves_non_trump) > 0:
-                                my_move = best_moves_non_trump[0]
+                                best_move = best_moves_non_trump[0]
 
                             # If we do not have a card that can beat the opponents card, dispose of a low value card
                             elif len(best_moves_non_trump) == 0:
@@ -161,7 +167,9 @@ class ProbabilityBot(Bot, ABC):
                                     temp3 = 12
                                     if move[1] < temp3:
                                         temp3 = move[1]
-                                        my_move = move
+                                        best_move = move
+
+                        return best_move
 
                     else:
                         for move in moves:
@@ -191,14 +199,16 @@ class ProbabilityBot(Bot, ABC):
                                 temp3 = 12
                                 if move[1] < temp3:
                                     temp3 = move[1]
-                                    my_move = move
+                                    best_move = move
 
                         elif len(best_moves_non_trump) == 0:
                             if len(best_moves_trump) > 0:
-                                my_move = best_moves_trump[0]
+                                best_move = best_moves_trump[0]
 
                             else:
-                                my_move = random.choice(moves)
+                                best_move = random.choice(moves)
+
+                        return best_move
 
             else:
                 trump_suit = state.get_trump_suit()
@@ -289,14 +299,15 @@ class ProbabilityBot(Bot, ABC):
                     if total_probability_dict[move] < best_move["prob"]:
                         best_move["prob"] = total_probability_dict[move]
                         best_move["card"] = move
-                my_move = best_move["card"]
+                final_move = best_move["card"]
 
+                return final_move
 
 # ----------------------------------------------------- #
 # GAME PHASE 2 #
 # ----------------------------------------------------- #
 
-        if state.get_phase == GamePhase.TWO:
+        if GameState.game_phase() == GamePhase.TWO:
             if not PlayerPerspective.am_i_leader():
                 current_trump = state.get_trump_suit()
                 valid_moves = []
@@ -357,6 +368,6 @@ class ProbabilityBot(Bot, ABC):
                         my_move = queen_normal[0]
                     elif len(jack_normal) > 0:
                         my_move = jack_normal[0]
-        return my_move
+            return my_move
 
 
