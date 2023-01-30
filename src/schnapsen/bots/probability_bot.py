@@ -1,7 +1,7 @@
 import random
 from abc import ABC
 from typing import Optional
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, GameState, GamePhase, Hand, Talon, Card
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, SchnapsenTrickImplementer, GameState, GamePhase, Hand, Talon, Card
 
 
 class ProbabilityBot(Bot, ABC):
@@ -19,23 +19,207 @@ class ProbabilityBot(Bot, ABC):
         trumpCardsMove = []
         max_score = 2
 
+# ----------------------------------------------------- #
+# GAME PHASE 1 #
+# ----------------------------------------------------- #
+
         if GameState.game_phase() == GamePhase.ONE:
             if not PlayerPerspective.am_i_leader():
-                # use non-trump trick to win
 
-                #If player uses a non-trump ace or 10, use a trump card
-                #If no option, play a trump card
-                #If no card in hand can beat opponent, discard card of least value
+                # Get the cards in the bots hand
+                cards_in_hand = state.get_hand()
 
-            #This is for when we are following not leading
+                # Get the card that was just played by the opponent
+                opp_played_card = SchnapsenTrickImplementer.get_leader_move()
+
+                # The card value of the opponent played card will be stored in the below variable
+                card_value = 0
+
+                # Get the trump suit of the game
+                trump_suit = state.get_trump_suit()
+
+                # The list of the best trump moves to select from
+                best_moves_trump = []
+
+                # The list of the best moves that are not trump
+                best_moves_non_trump = []
+
+                # The final best move that will be returned
+                best_move: Move = None
+
+                # Analyze the card rank of the opponents played card and give it the appropriate value
+                if opp_played_card.rank == "TEN":
+                    card_value = 10
+                elif opp_played_card.rank == "JACK":
+                    card_value = 2
+                elif opp_played_card.rank == "QUEEN":
+                    card_value = 3
+                elif opp_played_card.rank == "KING":
+                    card_value = 4
+                elif opp_played_card.rank == "ACE":
+                    card_value = 11
+
+                # If the card played by the opponent is a trump suit card
+                if opp_played_card.suit == trump_suit:
+
+                    # Loop through all valid moves
+                    for move in moves:
+
+                        # The move value for each move in the bots hand
+                        move_value = 0
+
+                        # Assign the appropriate value for the move depending on the rank
+                        if move.cards[0].rank == "JACK":
+                            move_value = 2
+                        elif move.cards[0].rank == "QUEEN":
+                            move_value = 3
+                        elif move.cards[0].rank == "KING":
+                            move_value = 4
+                        elif move.cards[0].rank == "TEN":
+                            move_value = 10
+                        elif move.cards[0].rank == "ACE":
+                            move_value = 11
+
+                        # If the current move is a trump suit card, and has a greater value than the
+                        # card played by the opponent, add it to the best_moves list
+                        if move.cards[0].suit == trump_suit:
+                            if move_value > card_value:
+                                best_moves_trump.append(move)
+
+                        # If the current move is not a trump suit card, add it to the best_moves_non_trump list
+                        # along with its value
+                        elif not move.cards[0].suit == trump_suit:
+                            temp: list = [move, move_value]
+                            best_moves_non_trump.append(temp)
+
+                    # If we have a card that can beat the trump card played by the opponent, play it
+                    if len(best_moves_trump) > 0:
+                        best_move = best_moves_trump[0]
+
+                    # If we have no trump card that can beat the opponents played card, discard of a card of low value
+                    elif len(best_moves_trump) == 0:
+                        temp = 12
+                        for x in best_moves_non_trump:
+                            if x[1] < temp:
+                                temp = x[1]
+                                best_move = x[0]
+
+                    return best_move
+
+                # If the opponent plays a non trump card
+                elif not opp_played_card.suit == trump_suit:
+
+                    # If the opponent plays a non-trump ace or 10, use at trump card to beat it
+                    if card_value == 11 or card_value == 10:
+                        for move in moves:
+                            if move.cards[0].suit == trump_suit:
+                                best_moves_trump.append(move)
+
+                        if len(best_moves_trump) > 0:
+                            best_move = best_moves_trump[0]
+
+                        elif len(best_moves_trump) == 0:
+                            for move in moves:
+                                # The move value for each move in the bots hand
+                                move_value = 0
+
+                                # Assign the appropriate value for the move depending on the rank
+                                if move.cards[0].rank == "JACK":
+                                    move_value = 2
+                                elif move.cards[0].rank == "QUEEN":
+                                    move_value = 3
+                                elif move.cards[0].rank == "KING":
+                                    move_value = 4
+                                elif move.cards[0].rank == "TEN":
+                                    move_value = 10
+                                elif move.cards[0].rank == "ACE":
+                                    move_value = 11
+
+                                # If we have a card that can beat the opponents card, add it to the list
+                                if move_value >= card_value:
+                                    best_moves_non_trump.append(move)
+
+                            # If we do have a card that can beat the opponents card, play it
+                            if len(best_moves_non_trump) > 0:
+                                best_move = best_moves_non_trump[0]
+
+                            # If we do not have a card that can beat the opponents card, dispose of a low value card
+                            elif len(best_moves_non_trump) == 0:
+                                temp: list = []
+                                for move in moves:
+                                    # The move value for each move in the bots hand
+                                    move_value = 0
+
+                                    # Assign the appropriate value for the move depending on the rank
+                                    if move.cards[0].rank == "JACK":
+                                        move_value = 2
+                                    elif move.cards[0].rank == "QUEEN":
+                                        move_value = 3
+                                    elif move.cards[0].rank == "KING":
+                                        move_value = 4
+                                    elif move.cards[0].rank == "TEN":
+                                        move_value = 10
+                                    elif move.cards[0].rank == "ACE":
+                                        move_value = 11
+
+                                    temp2: list = [move, move_value]
+                                    temp.append(temp2)
+
+                                for move in temp:
+                                    temp3 = 12
+                                    if move[1] < temp3:
+                                        temp3 = move[1]
+                                        best_move = move
+
+                        return best_move
+
+                    else:
+                        for move in moves:
+                            move_value = 0
+
+                            # Assign the appropriate value for the move depending on the rank
+                            if move.cards[0].rank == "JACK":
+                                move_value = 2
+                            elif move.cards[0].rank == "QUEEN":
+                                move_value = 3
+                            elif move.cards[0].rank == "KING":
+                                move_value = 4
+                            elif move.cards[0].rank == "TEN":
+                                move_value = 10
+                            elif move.cards[0].rank == "ACE":
+                                move_value = 11
+
+                            if move_value > card_value and move.cards[0].suit != trump_suit:
+                                temp2 = [move, move_value]
+                                best_moves_non_trump.append(temp2)
+                            elif move_value > card_value and move.cards[0].suit == trump_suit:
+                                temp2 = [move, move_value]
+                                best_moves_trump.append(temp2)
+
+                        if len(best_moves_non_trump) > 0:
+                            for move in best_moves_non_trump:
+                                temp3 = 12
+                                if move[1] < temp3:
+                                    temp3 = move[1]
+                                    best_move = move
+
+                        elif len(best_moves_non_trump) == 0:
+                            if len(best_moves_trump) > 0:
+                                best_move = best_moves_trump[0]
+
+                            else:
+                                best_move = random.choice(moves)
+
+                        return best_move
+
             else:
                 trump_suit = state.get_trump_suit()
                 trump_card = state.get_trump_card()
-                cards_in_hand = state.get_hand()
+                cards_in_hand = list(state.get_hand())
                 talon_size = state.get_talon_size()
 
                 opponent_hand = state.get_known_cards_of_opponent_hand()
-                seen_cards = state.seen_cards()
+                seen_cards = list(state.seen_cards(leader_move))
 
                 for move in moves:
                     if move.cards[0].suit == trump_suit:
@@ -121,6 +305,9 @@ class ProbabilityBot(Bot, ABC):
 
                 return final_move
 
+# ----------------------------------------------------- #
+# GAME PHASE 2 #
+# ----------------------------------------------------- #
 
         if GameState.game_phase() == GamePhase.TWO:
             if not PlayerPerspective.am_i_leader():
