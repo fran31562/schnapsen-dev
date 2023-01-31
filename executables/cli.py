@@ -29,6 +29,7 @@ def play_games_and_return_stats(engine: SchnapsenGamePlayEngine, bot1: Bot, bot2
     Play number_of_games games between bot1 and bot2, using the SchnapsenGamePlayEngine, and return how often bot1 won.
     Prints progress.
     """
+
     bot1_wins: int = 0
     lead, follower = bot1, bot2
     for i in range(1, number_of_games + 1):
