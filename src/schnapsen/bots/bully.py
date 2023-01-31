@@ -1,59 +1,80 @@
 import random
-from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, Score, Hand
-from schnapsen.deck import Suit, Card, Rank
 from typing import Optional
+from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, RegularMove
+from schnapsen.deck import Card, Suit
+
 
 class BullyBot(Bot):
+    def __init__(self, rng: random.Random) -> None:
+        self.rng = rng
 
-    def __init__(self, seed: int) -> None:
-        self.seed = seed
+    def get_move(self, player_perspective: PlayerPerspective, leader_move: Optional[Move], ) -> Move:
+        # The bully bot only plays valid moves.
+        # get all valid moves
+        my_valid_moves = player_perspective.valid_moves()
+        trump_suit_moves: list[Move] = []
 
+        # get the trump suit
+        trump_suit: Suit = player_perspective.get_trump_suit()
 
-    def get_move(self,
-                 state: PlayerPerspective,
-                 leader_move: Optional[Move]) -> Move:
+        # get all my valid moves that have the same suit with trump suit.
+        for move in my_valid_moves:
+            cards_of_move: list[Card] = move.cards
+            # get 1st of the list of cards of this move (in case of multiple -> Marriage)
+            card_of_move: Card = cards_of_move[0]
 
-        moves: list[Move] = state.valid_moves()
-        scorer = SchnapsenTrickScorer()
+            if card_of_move.suit == trump_suit:
+                trump_suit_moves.append(move)
 
-        trumpCardsMove = []
-        opponentSuitMove = []
-        max_score = 2
+        # If you have cards of the trump suit, play one of them at random
+        if len(trump_suit_moves) > 0:
+            random_trump_suit_move = random.choice(trump_suit_moves)
+            return random_trump_suit_move
 
+        # Else, if you are the follower and you have cards of the same suit as the opponent, play one of these at random.
+        if not player_perspective.am_i_leader():
+            assert leader_move is not None
+            leader_suit: Suit = leader_move.cards[0].suit
+            leaders_suit_moves: list[Move] = []
 
-        for move in moves:
-            if move.cards[0].suit == state.get_trump_suit():
-                trumpCardsMove.append(move)
-        if len(trumpCardsMove) > 0:
-            return random.choice(trumpCardsMove)
+            # get all my valid moves that have the same suit with leader suit.
+            for move in my_valid_moves:
+                cards_of_move = move.cards
+                # get 1st of the list of cards of this move (in case of multiple -> Marriage)
+                card_of_move = cards_of_move[0]
 
+                if card_of_move.suit == leader_suit:
+                    leaders_suit_moves.append(move)
 
-        elif state.am_i_leader() == False:
-            for move in moves:
-                if move.cards[0].suit == leader_move.cards[0].suit:
-                    opponentSuitMove.append(move)
-            if len(opponentSuitMove) > 0:
-                return random.choice(opponentSuitMove)
+            if len(leaders_suit_moves) > 0:
+                random_leader_suit_move = random.choice(leaders_suit_moves)
+                return random_leader_suit_move
 
+        # Else, play one of your cards with the highest rank
 
-            else:
-                for move in moves:
-                    if scorer.rank_to_points(move.cards[0].rank) > max_score:
-                        max_score = scorer.rank_to_points(move.cards[0].rank)
-                        my_move = move
-                return my_move
+        # get the list of cards in my hand
+        my_hand_cards: list[Card] = player_perspective.get_hand().cards
 
+        # create an instance object of a SchnapsenTrickScorer Class, that allows us to get the rank of Cards.
+        schnapsen_trick_scorer = SchnapsenTrickScorer()
+        # we set the highest rank to something negative, forcing it to change with the first comparison, since all scores are positive
+        highest_card_score: int = -1
+        card_with_highest_score: Optional[Card] = None
+        for card in my_hand_cards:
+            card_score = schnapsen_trick_scorer.rank_to_points(card.rank)
+            if card_score > highest_card_score:
+                highest_card_score = card_score
+                card_with_highest_score = card
 
+        # if our logic above was correct, this can never be None. We double check to make sure.
+        assert card_with_highest_score is not None
 
+        # We now create a move out of this card. Note that here we do not return a move from a call to valid_moves.
+        # An alternative implementaiton would first have taken all valid moves and subsequently filtered these down to
+        # the list of valid cards. Then, we would have found the one with the highest score from that.
+        move_of_card_with_highest_score = RegularMove(card_with_highest_score)
 
+        # We can double check that this is a valid move like this.
+        assert move_of_card_with_highest_score in my_valid_moves
 
-
-
-
-
-
-
-
-
-
-
+        return move_of_card_with_highest_score

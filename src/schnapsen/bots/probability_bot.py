@@ -2,6 +2,11 @@ import random
 from abc import ABC
 from typing import Optional
 from schnapsen.game import Bot, PlayerPerspective, Move, SchnapsenTrickScorer, SchnapsenTrickImplementer, GameState, GamePhase, Hand, Talon, Card
+from schnapsen.game import (Bot, Move, PlayerPerspective,
+                            SchnapsenGamePlayEngine, Trump_Exchange)
+from schnapsen.bots.rdeep import RdeepBot
+from schnapsen.bots.rand import RandBot
+from schnapsen.bots.bully import BullyBot
 
 
 class ProbabilityBot(Bot, ABC):
@@ -359,4 +364,54 @@ class ProbabilityBot(Bot, ABC):
                         my_move = jack_normal[0]
         return my_move
 
+def game_bully() -> None:
+    '''Code for playing against bully bot'''
+    engine = SchnapsenGamePlayEngine()
+    bot1 = BullyBot(108790)
+    bot2 = ProbabilityBot()
+    total_pbot: int = 0
+    total_bbot: int = 0
+    for i in range(10000):
+        winner_id, game_points, score = engine.play_game(bot1, bot2, random.Random(i))
+        if winner_id == bot1:
+            total_bbot += 1
+        elif winner_id == bot2:
+            total_pbot += 1
 
+    print(f"Bully: {total_bbot}, PBOT: {total_pbot}")
+
+def game_rdeep() -> None:
+    '''Code for playing against rdeep'''
+    bot1: Bot
+    bot2: Bot
+    engine = SchnapsenGamePlayEngine()
+    rdeep = bot1 = RdeepBot(num_samples=16, depth=4, rand=random.Random(4564654644))
+    bot2 = ProbabilityBot()
+    wins = 0
+    amount = 100
+    for game_number in range(1, amount + 1):
+        if game_number % 2 == 0:
+            bot1, bot2 = bot2, bot1
+        winner_id, _, _ = engine.play_game(bot1, bot2, random.Random(game_number))
+        if winner_id == rdeep:
+            wins += 1
+
+    print(f"won {wins} out of {game_number}")
+
+def random_game() -> None:
+    '''Code for playing against rand'''
+    engine = SchnapsenGamePlayEngine()
+    bot1 = RandBot(109892)
+    bot2 = ProbabilityBot()
+    total_pbot: int = 0
+    total_bbot: int = 0
+    for i in range(10000):
+        winner_id, game_points, score = engine.play_game(bot1, bot2, random.Random(i))
+        if winner_id == bot1:
+            total_bbot += 1
+        elif winner_id == bot2:
+            total_pbot += 1
+
+    print(f"Rand: {total_bbot}, PBOT: {total_pbot}")
+
+game_rdeep()
