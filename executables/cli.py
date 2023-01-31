@@ -47,7 +47,7 @@ def play_games_and_return_stats(engine: SchnapsenGamePlayEngine, bot1: Bot, bot2
 @main.command()
 def random_game() -> None:
     engine = SchnapsenGamePlayEngine()
-    bot1 = RandBot(12112121)
+    bot1 = RandBot(1572365)
     bot2 = ProbabilityBot()
     for i in range(1000):
         winner_id, game_points, score = engine.play_game(bot1, bot2, random.Random(i))
@@ -87,7 +87,7 @@ class HistoryBot(Bot):
 @main.command()
 def try_example_bot_game() -> None:
     engine = SchnapsenGamePlayEngine()
-    bot1 = ExampleBot()
+    bot1 = ProbabilityBot()
     bot2 = RandBot(464566)
     winner, points, score = engine.play_game(bot1, bot2, random.Random(1))
     print(f"Winner is: {winner}, with {points} points!")
@@ -99,7 +99,7 @@ def rdeep_game() -> None:
     bot2: Bot
     engine = SchnapsenGamePlayEngine()
     rdeep = bot1 = RdeepBot(num_samples=16, depth=4, rand=random.Random(4564654644))
-    bot2 = RandBot(464566)
+    bot2 = ProbabilityBot()
     wins = 0
     amount = 100
     for game_number in range(1, amount + 1):
